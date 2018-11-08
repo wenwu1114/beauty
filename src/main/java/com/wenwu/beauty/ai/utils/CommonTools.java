@@ -8,11 +8,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 自定义工具包
@@ -40,16 +38,16 @@ public class CommonTools {
      * @return sign
      */
     public static String getReqSign(ParamsModel paramsModel) throws Throwable {
-        String s;
-        // 字段比较少，手动排序了，按首字母排序
-        String app_idURLCode = PhpURLEncoder(paramsModel.getApp_id()+"","UTF-8").toUpperCase();
-        String imageURLCode = PhpURLEncoder(paramsModel.getImage()+"","UTF-8").toUpperCase();
-        String nonce_strURLCode = PhpURLEncoder(paramsModel.getNonce_str()+"","UTF-8").toUpperCase();
-        String time_stampURLCode = PhpURLEncoder(paramsModel.getTime_stamp()+"","UTF-8").toUpperCase();
-        s="app_id="+app_idURLCode+"&image="+imageURLCode+"&nonce_str="+nonce_strURLCode+"&time_stamp="+time_stampURLCode;
-        s=s+"&app_key="+ SystemVariable.APP_KEY;
-        System.out.println("拼接字符串"+s);
-        String sign = DigestUtils.md5DigestAsHex(s.getBytes("UTF-8")).toUpperCase();
+        StringBuffer sb=new StringBuffer();
+        Map<String, Object> paramsMap = convertEntityToTreeMap(paramsModel);
+        for( Map.Entry<String,Object> entry:paramsMap.entrySet()){
+            Object value = entry.getValue();
+            if (value!=null)
+                sb.append(entry.getKey()).append("=").append(PhpURLEncoder(entry.getValue().toString()+"","UTF-8")).append("&");
+        }
+        sb.append("app_key=").append(SystemVariable.APP_KEY);
+        System.out.println("拼接字符串"+sb.toString());
+        String sign = DigestUtils.md5DigestAsHex(sb.toString().getBytes("UTF-8")).toUpperCase();
         System.out.println(sign);
         System.out.println(sign.getBytes("UTF-8").length);
         return sign;
@@ -79,6 +77,11 @@ public class CommonTools {
 
     }
 
+    /**
+     * 获取提交的数据
+     * @param paramsModel
+     * @return
+     */
     public static List<NameValuePair> getPostData(ParamsModel paramsModel){
         List<NameValuePair> pairs = new ArrayList<>();
         pairs.add(new BasicNameValuePair("app_id",paramsModel.getApp_id()+""));
@@ -89,8 +92,37 @@ public class CommonTools {
         return pairs;
     }
 
+    /**
+     * 标准url编码
+     * @param s
+     * @param charSet
+     * @return
+     * @throws Throwable
+     */
     public static String PhpURLEncoder(String s,String charSet) throws Throwable{
         String encode = URLEncoder.encode(s, charSet);
         return  encode.replace("*","%2A");
+    }
+
+    /**
+     * 实体属性转为treeMap对象
+     * @param obj
+     * @return
+     */
+    public static Map<String,Object> convertEntityToTreeMap(Object obj) throws  Throwable{
+        Map<String,Object> map=new TreeMap<>();
+        if (obj==null)
+            return null;
+        Class<?> objClass = obj.getClass();
+        if (objClass!=null){
+            Field[] fields = objClass.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Field f=objClass.getDeclaredField(fields[i].getName());
+                f.setAccessible(true);
+                Object o = f.get(obj);
+                map.put(fields[i].getName(),o);
+            }
+        }
+        return map;
     }
 }

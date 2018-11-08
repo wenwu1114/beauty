@@ -52,13 +52,12 @@ public class BeautyController {
                 targetFile.mkdir();
             FileOutputStream out=new FileOutputStream(filePath+fileName);
             out.write(file.getBytes());
-            out.flush();;
+            out.flush();
             out.close();
             ParamsModel paramsModel = new ParamsModel();
             paramsModel.setApp_id(SystemVariable.APPID);
             paramsModel.setImage(image);
             String nonce_str= UUID.randomUUID().toString().substring(0,30).replace("-","0");
-            System.out.println("随机字符串字节："+nonce_str.getBytes("UTF-8").length);
             paramsModel.setNonce_str(nonce_str);
             paramsModel.setTime_stamp(CommonTools.getMillTime(date));
             return beautyService.checkImage(paramsModel);
