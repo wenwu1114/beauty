@@ -68,8 +68,8 @@ public class ParamsModel {
         sb.append("app_id=").append(getApp_id());
         sb.append("&time_stamp=").append(getTime_stamp());
         sb.append("&nonce_str=").append(getNonce_str());
-        sb.append("&sign=").append(getSign());
         sb.append("&image=").append(getImage());
+        sb.append("&sign=").append(getSign());
         return sb.toString();
     }
 }

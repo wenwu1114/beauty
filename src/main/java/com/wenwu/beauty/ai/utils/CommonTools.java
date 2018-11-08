@@ -2,14 +2,17 @@ package com.wenwu.beauty.ai.utils;
 
 import com.wenwu.beauty.ai.consts.SystemVariable;
 import com.wenwu.beauty.ai.model.ParamsModel;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 自定义工具包
@@ -39,13 +42,16 @@ public class CommonTools {
     public static String getReqSign(ParamsModel paramsModel) throws Throwable {
         String s;
         // 字段比较少，手动排序了，按首字母排序
-        String app_idURLCode = URLEncoder.encode(paramsModel.getApp_id()+"","UTF-8").toUpperCase();
-        String imageURLCode = URLEncoder.encode(paramsModel.getImage()+"","UTF-8").toUpperCase();
-        String nonce_strURLCode = URLEncoder.encode(paramsModel.getNonce_str()+"","UTF-8").toUpperCase();
-        String time_stampURLCode = URLEncoder.encode(paramsModel.getTime_stamp()+"","UTF-8").toUpperCase();
-        s="app_id="+app_idURLCode+"&image="+imageURLCode+"&nonce_str="+nonce_strURLCode+"$time_stamp="+time_stampURLCode;
+        String app_idURLCode = PhpURLEncoder(paramsModel.getApp_id()+"","UTF-8").toUpperCase();
+        String imageURLCode = PhpURLEncoder(paramsModel.getImage()+"","UTF-8").toUpperCase();
+        String nonce_strURLCode = PhpURLEncoder(paramsModel.getNonce_str()+"","UTF-8").toUpperCase();
+        String time_stampURLCode = PhpURLEncoder(paramsModel.getTime_stamp()+"","UTF-8").toUpperCase();
+        s="app_id="+app_idURLCode+"&image="+imageURLCode+"&nonce_str="+nonce_strURLCode+"&time_stamp="+time_stampURLCode;
         s=s+"&app_key="+ SystemVariable.APP_KEY;
-        String sign = DigestUtils.md5DigestAsHex(s.getBytes()).toUpperCase();
+        System.out.println("拼接字符串"+s);
+        String sign = DigestUtils.md5DigestAsHex(s.getBytes("UTF-8")).toUpperCase();
+        System.out.println(sign);
+        System.out.println(sign.getBytes("UTF-8").length);
         return sign;
     }
 
@@ -56,8 +62,9 @@ public class CommonTools {
      */
     public static String Base64Img(MultipartFile file) throws Throwable {
         byte[] bytes = file.getBytes();
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(bytes);
+        String string = Base64.getEncoder().encodeToString(bytes);
+        System.out.println("图片的base64编码："+string);
+        return  string;
     }
 
     /**
@@ -70,5 +77,20 @@ public class CommonTools {
         String timestamp = String.valueOf(date.getTime()/1000);
         return Integer.valueOf(timestamp);
 
+    }
+
+    public static List<NameValuePair> getPostData(ParamsModel paramsModel){
+        List<NameValuePair> pairs = new ArrayList<>();
+        pairs.add(new BasicNameValuePair("app_id",paramsModel.getApp_id()+""));
+        pairs.add(new BasicNameValuePair("image",paramsModel.getImage()));
+        pairs.add(new BasicNameValuePair("time_stamp",paramsModel.getTime_stamp()+""));
+        pairs.add(new BasicNameValuePair("nonce_str",paramsModel.getNonce_str()));
+        pairs.add(new BasicNameValuePair("sign",paramsModel.getSign()));
+        return pairs;
+    }
+
+    public static String PhpURLEncoder(String s,String charSet) throws Throwable{
+        String encode = URLEncoder.encode(s, charSet);
+        return  encode.replace("*","%2A");
     }
 }
