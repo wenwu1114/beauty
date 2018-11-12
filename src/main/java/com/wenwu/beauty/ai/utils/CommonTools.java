@@ -1,15 +1,17 @@
 package com.wenwu.beauty.ai.utils;
 
-import com.wenwu.beauty.ai.consts.SystemVariable;
-import com.wenwu.beauty.ai.model.ParamsModel;
+import com.wenwu.beauty.ai.consts.faceage.SystemVariable;
+import com.wenwu.beauty.ai.model.faceage.ParamsModel;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Encoder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -37,7 +39,7 @@ public class CommonTools {
      * @param paramsModel
      * @return sign
      */
-    public static String getReqSign(ParamsModel paramsModel) throws Throwable {
+    public static String getReqSign(ParamsModel paramsModel,String app_key) throws Throwable {
         StringBuffer sb=new StringBuffer();
         Map<String, Object> paramsMap = convertEntityToTreeMap(paramsModel);
         for( Map.Entry<String,Object> entry:paramsMap.entrySet()){
@@ -45,7 +47,7 @@ public class CommonTools {
             if (value!=null)
                 sb.append(entry.getKey()).append("=").append(PhpURLEncoder(entry.getValue().toString()+"","UTF-8")).append("&");
         }
-        sb.append("app_key=").append(SystemVariable.APP_KEY);
+        sb.append("app_key=").append(app_key);
         System.out.println("拼接字符串"+sb.toString());
         String sign = DigestUtils.md5DigestAsHex(sb.toString().getBytes("UTF-8")).toUpperCase();
         System.out.println(sign);
@@ -124,5 +126,34 @@ public class CommonTools {
             }
         }
         return map;
+    }
+
+    /**
+     * 保存图片
+     * @param multipartFile
+     */
+    public static void saveImg(MultipartFile multipartFile) throws Throwable{
+        Properties properties = System.getProperties();
+        String osname = properties.getProperty("os.name");
+        String path;
+        if ("Linux".equals(osname)){
+            path = SystemVariable.PHOTO_PATH_LINUX;
+        }else {
+            path = SystemVariable.PHOTO_PATH_WINDOWS;
+        }
+        File targetFile = new File(path);
+        if (!targetFile.exists()){
+            targetFile.mkdir();
+        }
+        byte[] bytes = multipartFile.getBytes();
+        Date date=new Date();
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+        FileOutputStream outputStream = new FileOutputStream(path+time+multipartFile.getOriginalFilename());
+        outputStream.write(bytes);
+        outputStream.flush();
+    }
+
+    public static String getRandStr(){
+        return UUID.randomUUID().toString().substring(0,30).replace("-","0");
     }
 }

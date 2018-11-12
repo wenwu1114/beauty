@@ -1,9 +1,9 @@
-package com.wenwu.beauty.ai.model;
+package com.wenwu.beauty.ai.model.facedecoration;
 
 /**
- * 颜龄接口请求参数模型
+ * 人脸变妆参数模型
  */
-public class ParamsModel {
+public class DecorationParamModel {
     private int app_id;
     /**
      * 请求时间戳
@@ -18,6 +18,10 @@ public class ParamsModel {
      */
     private String image;
 
+    /**
+     * 变妆编码
+     */
+    private int decorationCode;
     /**
      * 签名信息
      */
@@ -63,11 +67,20 @@ public class ParamsModel {
         this.sign = sign;
     }
 
+    public int getDecorationCode() {
+        return decorationCode;
+    }
+
+    public void setDecorationCode(int decorationCode) {
+        this.decorationCode = decorationCode;
+    }
+
     public String getPostData(){
         StringBuffer sb=new StringBuffer();
         sb.append("app_id=").append(getApp_id());
         sb.append("&time_stamp=").append(getTime_stamp());
         sb.append("&nonce_str=").append(getNonce_str());
+        sb.append("&decoration=").append(getDecorationCode());
         sb.append("&image=").append(getImage());
         sb.append("&sign=").append(getSign());
         return sb.toString();

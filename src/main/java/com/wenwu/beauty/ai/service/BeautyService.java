@@ -1,6 +1,6 @@
 package com.wenwu.beauty.ai.service;
 
-import com.wenwu.beauty.ai.model.ParamsModel;
+import com.wenwu.beauty.ai.model.faceage.ParamsModel;
 
 public interface BeautyService {
     Object checkImage(ParamsModel paramsModel) throws Throwable;

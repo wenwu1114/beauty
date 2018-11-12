@@ -1,15 +1,13 @@
-package com.wenwu.beauty.ai.utils;
+package com.wenwu.beauty.ai.httpsdk;
 
-import com.wenwu.beauty.ai.model.ParamsModel;
-import org.apache.http.HttpEntity;
+import com.wenwu.beauty.ai.model.faceage.ParamsModel;
+import com.wenwu.beauty.ai.utils.CommonTools;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.params.HttpParams;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
@@ -21,10 +19,13 @@ import java.net.URI;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * 构建http请求工具
- */
-public class HttpTools {
+public class HttpReqUtils {
+
+    /**
+     * 创建客户端
+     * @return
+     * @throws Throwable
+     */
     private CloseableHttpClient createSSLClientDefault() throws Throwable{
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
             @Override
@@ -42,20 +43,21 @@ public class HttpTools {
     }
 
     /**
-     * 请求数据
+     * 发送post请求
      * @param url
      * @param paramsModel
-     * @return
+     * @param contentType
+     * @return 返回json字符串
      * @throws Throwable
      */
-    public String getResponsentity(String url,ParamsModel paramsModel) throws Throwable{
+    public String sendHttpPostReq(String url, ParamsModel paramsModel,String contentType) throws Throwable{
         CloseableHttpClient httpClient = createSSLClientDefault();
         HttpPost post = new HttpPost();
         post.setURI(new URI(url));
-        post.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        post.addHeader("Content-Type", contentType);
         post.setEntity(new UrlEncodedFormEntity(CommonTools.getPostData(paramsModel),"UTF-8"));
         CloseableHttpResponse response = httpClient.execute(post);
-        System.out.println(post);
+        // System.out.println(post);
         System.out.println(EntityUtils.toString(post.getEntity()));
         String resultStr = EntityUtils.toString(response.getEntity());
         return resultStr;
