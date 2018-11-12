@@ -1,7 +1,7 @@
 package com.wenwu.beauty.ai.consts.faceage;
 
 /**
- * 系统常量
+ * 颜龄识别系统常量
  */
 public class SystemVariable {
     /**
