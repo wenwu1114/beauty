@@ -1,4 +1,4 @@
-package com.wenwu.beauty.ai.model;
+package com.wenwu.beauty.ai.model.faceage;
 
 /**
  * 返回结果模型

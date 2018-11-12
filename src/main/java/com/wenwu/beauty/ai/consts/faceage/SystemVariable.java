@@ -1,4 +1,4 @@
-package com.wenwu.beauty.ai.consts;
+package com.wenwu.beauty.ai.consts.faceage;
 
 /**
  * 系统常量
@@ -18,4 +18,10 @@ public class SystemVariable {
      * 接口地址
      */
     public static final String URL="https://api.ai.qq.com/fcgi-bin/ptu/ptu_faceage";
+
+    /**
+     * 图片保存路径
+     */
+    public static final String PHOTO_PATH_WINDOWS="C:\\imgs\\";
+    public static final String PHOTO_PATH_LINUX="/root/images/";
 }

@@ -1,4 +1,4 @@
-package com.wenwu.beauty.ai.model;
+package com.wenwu.beauty.ai.model.faceage;
 
 /**
  * 颜龄接口请求参数模型
