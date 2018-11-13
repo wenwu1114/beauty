@@ -60,6 +60,7 @@ public class HttpReqUtils {
         // System.out.println(post);
         System.out.println(EntityUtils.toString(post.getEntity()));
         String resultStr = EntityUtils.toString(response.getEntity());
+        CommonTools.saveResult(resultStr);
         return resultStr;
     }
 }

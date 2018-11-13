@@ -1,5 +1,7 @@
 package com.wenwu.beauty.ai.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenwu.beauty.ai.consts.faceage.SystemVariable;
 import com.wenwu.beauty.ai.model.faceage.ParamsModel;
 import org.apache.http.NameValuePair;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -48,10 +51,7 @@ public class CommonTools {
                 sb.append(entry.getKey()).append("=").append(PhpURLEncoder(entry.getValue().toString()+"","UTF-8")).append("&");
         }
         sb.append("app_key=").append(app_key);
-        System.out.println("拼接字符串"+sb.toString());
         String sign = DigestUtils.md5DigestAsHex(sb.toString().getBytes("UTF-8")).toUpperCase();
-        System.out.println(sign);
-        System.out.println(sign.getBytes("UTF-8").length);
         return sign;
     }
 
@@ -63,7 +63,6 @@ public class CommonTools {
     public static String Base64Img(MultipartFile file) throws Throwable {
         byte[] bytes = file.getBytes();
         String string = Base64.getEncoder().encodeToString(bytes);
-        System.out.println("图片的base64编码："+string);
         return  string;
     }
 
@@ -153,9 +152,30 @@ public class CommonTools {
         FileOutputStream outputStream = new FileOutputStream(path+time+multipartFile.getOriginalFilename());
         outputStream.write(bytes);
         outputStream.flush();
+        outputStream.close();
     }
 
     public static String getRandStr(){
         return UUID.randomUUID().toString().substring(0,30).replace("-","0");
+    }
+
+    public static void saveResult(String result) throws Throwable{
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(result);
+        String img64 =jsonNode.get("data").get("image").asText();
+        byte[] bytes = Base64.getDecoder().decode(img64);
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        Properties properties = System.getProperties();
+        String osname = properties.getProperty("os.name");
+        String path;
+        if ("Linux".equals(osname)){
+            path = SystemVariable.PHOTO_PATH_LINUX;
+        }else {
+            path = SystemVariable.PHOTO_PATH_WINDOWS;
+        }
+        OutputStream outputStream = new FileOutputStream(path+"\\"+time+".jpg");
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
     }
 }
