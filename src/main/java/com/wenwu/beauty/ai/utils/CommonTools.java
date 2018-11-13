@@ -36,12 +36,12 @@ public class CommonTools {
      * 签名有效期5分钟，需要请求接口时刻实时计算签名信息
      * 更多注意事项，请查看常见问题
      *
-     * @param paramsModel
+     * @param
      * @return sign
      */
-    public static String getReqSign(ParamsModel paramsModel,String app_key) throws Throwable {
+    public static String getReqSign(Map<String,Object> paramsMap,String app_key) throws Throwable {
         StringBuffer sb=new StringBuffer();
-        Map<String, Object> paramsMap = convertEntityToTreeMap(paramsModel);
+       // Map<String, Object> paramsMap = convertEntityToTreeMap(paramsModel);
         for( Map.Entry<String,Object> entry:paramsMap.entrySet()){
             Object value = entry.getValue();
             if (value!=null)
@@ -81,16 +81,18 @@ public class CommonTools {
 
     /**
      * 获取提交的数据
-     * @param paramsModel
+     * @param paramsMap
      * @return
      */
-    public static List<NameValuePair> getPostData(ParamsModel paramsModel){
+    public static List<NameValuePair> getPostData(Map<String,Object> paramsMap){
         List<NameValuePair> pairs = new ArrayList<>();
-        pairs.add(new BasicNameValuePair("app_id",paramsModel.getApp_id()+""));
-        pairs.add(new BasicNameValuePair("image",paramsModel.getImage()));
-        pairs.add(new BasicNameValuePair("time_stamp",paramsModel.getTime_stamp()+""));
-        pairs.add(new BasicNameValuePair("nonce_str",paramsModel.getNonce_str()));
-        pairs.add(new BasicNameValuePair("sign",paramsModel.getSign()));
+        if (paramsMap==null)
+            return null;
+        Set<Map.Entry<String, Object>> entrySet = paramsMap.entrySet();
+
+        for(Map.Entry<String,Object> entry:entrySet){
+            pairs.add(new BasicNameValuePair(entry.getKey(),entry.getValue()+""));
+        }
         return pairs;
     }
 

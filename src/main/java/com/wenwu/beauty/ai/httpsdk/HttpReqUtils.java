@@ -18,6 +18,7 @@ import javax.net.ssl.SSLSession;
 import java.net.URI;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 public class HttpReqUtils {
 
@@ -45,17 +46,16 @@ public class HttpReqUtils {
     /**
      * 发送post请求
      * @param url
-     * @param paramsModel
      * @param contentType
      * @return 返回json字符串
      * @throws Throwable
      */
-    public String sendHttpPostReq(String url, ParamsModel paramsModel,String contentType) throws Throwable{
+    public String sendHttpPostReq(String url, Map<String,Object> paramsMap, String contentType) throws Throwable{
         CloseableHttpClient httpClient = createSSLClientDefault();
         HttpPost post = new HttpPost();
         post.setURI(new URI(url));
         post.addHeader("Content-Type", contentType);
-        post.setEntity(new UrlEncodedFormEntity(CommonTools.getPostData(paramsModel),"UTF-8"));
+        post.setEntity(new UrlEncodedFormEntity(CommonTools.getPostData(paramsMap),"UTF-8"));
         CloseableHttpResponse response = httpClient.execute(post);
         // System.out.println(post);
         System.out.println(EntityUtils.toString(post.getEntity()));

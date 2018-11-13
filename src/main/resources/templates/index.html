@@ -9,9 +9,21 @@
     <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.js"></script>
 </head>
 <body>
-<form id="form1" action="/fileupload" method="post" enctype="multipart/form-data">
+<form id="form1" action="/api/fileupload" method="post" enctype="multipart/form-data">
     <input type="file" name="image_file" />
     <input type="button" id="sub" value="提交" />
+</form>
+<hr/>
+<form id="form2" action="/api/decoration" method="post" enctype="multipart/form-data">
+    <input type="file" name="image_file" /><br/>
+    <select name="decoration">
+        <script type="text/javascript">
+            for(var i=1;i<=22;i++){
+                document.write('<option value="'+i+'">'+i+'</option>')
+            }
+        </script>
+    </select>
+    <input type="button" id="dec" value="提交" />
 </form>
 <div >
     <img  id="result">
@@ -20,6 +32,19 @@
 <script type="text/javascript">
     $("#sub").click(function(){
         $("#form1").ajaxSubmit({
+            beforeSubmit:function () {
+                //
+            },
+            success:function (data) {
+                data = eval("("+data+")");
+                if (data.ret==0) {
+                    $("#result").attr("src","data:image/jpeg;base64,"+data.data.image);
+                }
+            }
+        })
+    })
+    $("#dec").click(function(){
+        $("#form2").ajaxSubmit({
             beforeSubmit:function () {
                 //
             },

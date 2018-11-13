@@ -21,7 +21,7 @@ public class DecorationParamModel {
     /**
      * 变妆编码
      */
-    private int decorationCode;
+    private int decoration;
     /**
      * 签名信息
      */
@@ -67,12 +67,12 @@ public class DecorationParamModel {
         this.sign = sign;
     }
 
-    public int getDecorationCode() {
-        return decorationCode;
+    public int getDecoration() {
+        return decoration;
     }
 
-    public void setDecorationCode(int decorationCode) {
-        this.decorationCode = decorationCode;
+    public void setDecoration(int decoration) {
+        this.decoration = decoration;
     }
 
     public String getPostData(){
@@ -80,7 +80,7 @@ public class DecorationParamModel {
         sb.append("app_id=").append(getApp_id());
         sb.append("&time_stamp=").append(getTime_stamp());
         sb.append("&nonce_str=").append(getNonce_str());
-        sb.append("&decoration=").append(getDecorationCode());
+        sb.append("&decoration=").append(getDecoration());
         sb.append("&image=").append(getImage());
         sb.append("&sign=").append(getSign());
         return sb.toString();
