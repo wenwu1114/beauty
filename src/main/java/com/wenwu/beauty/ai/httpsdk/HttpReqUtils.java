@@ -58,7 +58,7 @@ public class HttpReqUtils {
         post.setEntity(new UrlEncodedFormEntity(CommonTools.getPostData(paramsMap),"UTF-8"));
         CloseableHttpResponse response = httpClient.execute(post);
         // System.out.println(post);
-        System.out.println(EntityUtils.toString(post.getEntity()));
+        // System.out.println(EntityUtils.toString(post.getEntity()));
         String resultStr = EntityUtils.toString(response.getEntity());
         CommonTools.saveResult(resultStr);
         return resultStr;
